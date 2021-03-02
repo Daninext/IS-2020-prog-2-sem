@@ -1,6 +1,7 @@
 #pragma once
 #include <math.h>
 #include <memory.h>
+//todo cpp
 class Point {
 public:
 	Point(int x = 0, int y = 0)
@@ -25,6 +26,7 @@ public:
 		return *this;
 	}
 
+	//todo = default
 	~Point() {}
 
 	int getX() const {
@@ -40,6 +42,7 @@ private:
 	int y_;
 };
 
+//todo make inherit from point
 class Vector {
 public:
 	Vector(int x = 0, int y = 0)
@@ -79,6 +82,8 @@ private:
 	int y_;
 };
 
+
+//todo inherit from ClosedPolygonalChain
 class Polygon {
 public:
 	Polygon() = delete;
@@ -128,6 +133,7 @@ public:
 
 protected:
 	void FindArea() {
+	//todo without double until end
 		for (int i = 0; i != PointNum - 1; i++) {
 			area_ += AllPoints[i].getX() * AllPoints[i + 1].getY();
 		}
@@ -157,6 +163,7 @@ protected:
 	Point* AllPoints;
 	Vector* AllVectors;
 	float area_;
+	//todo int perimeter is weird
 	int perimeter_;
 };
 
@@ -182,6 +189,7 @@ public:
 	~Triangle() {}
 
 	bool hasRightAngle() const {
+		//todo u dont need flag
 		bool flag = false;
 		
 		if (((AllPoints[1].getX() - AllPoints[0].getX()) * (AllPoints[2].getX() - AllPoints[0].getX())) + ((AllPoints[1].getY() - AllPoints[0].getY()) * (AllPoints[2].getY() - AllPoints[0].getY())) == 0) {
@@ -209,7 +217,7 @@ public:
 	Trapezoid(const Trapezoid& other) : Polygon(other) {
 		height_ = other.height_;
 	}
-
+	//todo same arrays between objects
 	Trapezoid& operator=(const Trapezoid& other) {
 		if (&other == this)
 			return *this;
@@ -252,6 +260,8 @@ private:
 	float height_ = 0;
 };
 
+
+//todo area and perimeter
 class RegularPolygon : public Polygon {
 public:
 	RegularPolygon(int n, Point* a) : Polygon(n, a) { }
@@ -318,6 +328,7 @@ public:
 	}
 
 protected:
+	//todo copy-paste
 	void FindVectors() {
 		AllVectors = new Vector[PointNum - 1];
 		for (int i = 0; i != PointNum - 1; i++) {
