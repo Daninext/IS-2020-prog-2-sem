@@ -1,0 +1,23 @@
+Cloning https://github.com/Daninext/IS-2020-prog-2-sem/homework1
+Cloning finished
+It's OK
+In file included from main.cpp:1:
+geometry.h: In constructor 'Polygon::Polygon(int, Point*)':
+geometry.h:90:48: warning: 'void* memcpy(void*, const void*, size_t)' writing to an object of type 'class Point' with no trivial copy-assignment; use copy-assignment or copy-initialization instead [-Wclass-memaccess]
+   90 |   memcpy(AllPoints, a, PointNum * sizeof(Point));
+      |                                                ^
+geometry.h:4:7: note: 'class Point' declared here
+    4 | class Point {
+      |       ^~~~~
+In file included from main.cpp:1:
+geometry.h: In constructor 'PolygonalChain::PolygonalChain(int, Point*)':
+geometry.h:283:48: warning: 'void* memcpy(void*, const void*, size_t)' writing to an object of type 'class Point' with no trivial copy-assignment; use copy-assignment or copy-initialization instead [-Wclass-memaccess]
+  283 |   memcpy(AllPoints, a, PointNum * sizeof(Point));
+      |                                                ^
+In file included from main.cpp:1:
+geometry.h:4:7: note: 'class Point' declared here
+    4 | class Point {
+      |       ^~~~~
+
+
+
