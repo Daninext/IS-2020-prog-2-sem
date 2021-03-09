@@ -2,7 +2,6 @@
 #include <math.h>
 #include <memory.h>
 #define PI 3.14159265
-//fixed cpp
 class Point {
 public:
 	Point(int x = 0, int y = 0);
@@ -11,7 +10,6 @@ public:
 
 	Point& operator=(const Point& other) = default;
 
-	//fixed = default
 	~Point() = default;
 
 	int getX() const;
@@ -23,7 +21,6 @@ private:
 	int y_;
 };
 
-//fixed make inherit from point
 class PolygonalChain {
 public:
 	PolygonalChain(int n, Point* a);
@@ -43,7 +40,6 @@ public:
 protected:
 	int PointNum;
 	Point* AllPoints;
-	//fixed copy-paste
 };
 
 class ClosedPolygonalChain : public PolygonalChain {
@@ -59,7 +55,6 @@ public:
 	float perimeter() const override;
 };
 
-//fixed inherit from ClosedPolygonalChain
 class Polygon : public ClosedPolygonalChain {
 public:
 	Polygon(int n, Point* a);
@@ -71,9 +66,6 @@ public:
 	~Polygon() = default;
 
 	float virtual area() const;
-	//fixed without double until end
-
-	//fixed int perimeter is weird
 };
 
 class Triangle : public Polygon {
@@ -86,7 +78,6 @@ public:
 
 	~Triangle() = default;
 
-	//fixed u dont need flag
 	bool hasRightAngle() const;
 };
 
@@ -95,7 +86,6 @@ public:
 	Trapezoid(int n, Point* a);
 
 	Trapezoid(const Trapezoid& other);
-	//fixed same arrays between objects
 	Trapezoid& operator=(const Trapezoid& other) = default;
 
 	~Trapezoid() = default;
@@ -103,7 +93,6 @@ public:
 	float height() const;
 };
 
-//fixed area and perimeter
 class RegularPolygon : public Polygon {
 public:
 	RegularPolygon(int n, Point* a);

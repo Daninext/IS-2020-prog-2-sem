@@ -33,6 +33,7 @@ Point PolygonalChain::getPoint(int i) const {
 
 float PolygonalChain::perimeter() const {
 	float perimeter_ = 0;
+	//todo variables should start with capital letters
 	Point* AllVectors = new Point[PointNum - 1];
 	for (int i = 0; i != PointNum - 1; i++) {
 		AllVectors[i] = Point((AllPoints[i + 1].getX() - AllPoints[i].getX()), (AllPoints[i + 1].getY() - AllPoints[i].getY()));
@@ -58,7 +59,8 @@ ClosedPolygonalChain::ClosedPolygonalChain(const ClosedPolygonalChain& other)
 
 float ClosedPolygonalChain::perimeter() const {
 	float perimeter_ = 0;
-
+	//todo memory leak
+	//todo use perimeter from base class
 	Point* AllVectors = new Point[PointNum];
 	for (int i = 0; i != PointNum - 1; i++) {
 		AllVectors[i] = Point((AllPoints[i + 1].getX() - AllPoints[i].getX()), (AllPoints[i + 1].getY() - AllPoints[i].getY()));
