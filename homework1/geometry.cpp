@@ -32,17 +32,14 @@ Point PolygonalChain::getPoint(int i) const {
 }
 
 float PolygonalChain::perimeter() const {
-	float perimeter_ = 0;
-	//todo variables should start with capital letters
-	Point* AllVectors = new Point[PointNum - 1];
+	float Perimeter = 0;
+	//fixed variables should start with capital letters
+
 	for (int i = 0; i != PointNum - 1; i++) {
-		AllVectors[i] = Point((AllPoints[i + 1].getX() - AllPoints[i].getX()), (AllPoints[i + 1].getY() - AllPoints[i].getY()));
-	}
-	for (int i = 0; i != PointNum - 1; i++) {
-		perimeter_ += (float)sqrt(pow(AllVectors[i].getX(), 2) + pow(AllVectors[i].getY(), 2));
+		Perimeter += (float)sqrt(pow((AllPoints[i + 1].getX() - AllPoints[i].getX()), 2) + pow((AllPoints[i + 1].getY() - AllPoints[i].getY()), 2));
 	}
 
-	return perimeter_;
+	return Perimeter;
 }
 
 int PolygonalChain::getN() const {
@@ -58,20 +55,13 @@ ClosedPolygonalChain::ClosedPolygonalChain(const ClosedPolygonalChain& other)
 { }
 
 float ClosedPolygonalChain::perimeter() const {
-	float perimeter_ = 0;
-	//todo memory leak
-	//todo use perimeter from base class
-	Point* AllVectors = new Point[PointNum];
-	for (int i = 0; i != PointNum - 1; i++) {
-		AllVectors[i] = Point((AllPoints[i + 1].getX() - AllPoints[i].getX()), (AllPoints[i + 1].getY() - AllPoints[i].getY()));
-	}
-	AllVectors[PointNum - 1] = Point((AllPoints[0].getX() - AllPoints[PointNum - 1].getX()), (AllPoints[0].getY() - AllPoints[PointNum - 1].getY()));
+	float Perimeter = 0;
+	//fixed memory leak
+	//fixed use perimeter from base class
+	Perimeter = PolygonalChain::perimeter();
+	Perimeter += (float)sqrt(pow((AllPoints[0].getX() - AllPoints[PointNum - 1].getX()), 2) + pow((AllPoints[0].getY() - AllPoints[PointNum - 1].getY()), 2));
 
-	for (int i = 0; i != PointNum; i++) {
-		perimeter_ += (float)sqrt(pow(AllVectors[i].getX(), 2) + pow(AllVectors[i].getY(), 2));
-	}
-
-	return perimeter_;
+	return Perimeter;
 }
 
 Polygon::Polygon(int n, Point* a)
@@ -83,18 +73,18 @@ Polygon::Polygon(const Polygon& other)
 { }
 
 float Polygon::area() const {
-	int area_ = 0;
+	int Area = 0;
 
 	for (int i = 0; i != PointNum - 1; i++) {
-		area_ += AllPoints[i].getX() * AllPoints[i + 1].getY();
+		Area += AllPoints[i].getX() * AllPoints[i + 1].getY();
 	}
-	area_ += AllPoints[PointNum - 1].getX() * AllPoints[0].getY();
+	Area += AllPoints[PointNum - 1].getX() * AllPoints[0].getY();
 	for (int i = 0; i != PointNum - 1; i++) {
-		area_ -= AllPoints[i + 1].getX() * AllPoints[i].getY();
+		Area -= AllPoints[i + 1].getX() * AllPoints[i].getY();
 	}
-	area_ -= AllPoints[0].getX() * AllPoints[PointNum - 1].getY();
+	Area -= AllPoints[0].getX() * AllPoints[PointNum - 1].getY();
 
-	return (float)abs(area_) / 2;
+	return (float)abs(Area) / 2;
 }
 
 Triangle::Triangle(int n, Point* a) 
