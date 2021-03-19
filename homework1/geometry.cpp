@@ -1,5 +1,6 @@
 #include "geometry.h"
 
+//todo NOTE
 Point::Point(int x, int y)
 	: x_(x), y_(y) 
 { }
@@ -33,7 +34,7 @@ Point PolygonalChain::getPoint(int i) const {
 
 float PolygonalChain::perimeter() const {
 	float Perimeter = 0;
-	//fixed variables should start with capital letters
+	//todo variables should not (sorry) start with capital letters
 
 	for (int i = 0; i != PointNum - 1; i++) {
 		Perimeter += (float)sqrt(pow((AllPoints[i + 1].getX() - AllPoints[i].getX()), 2) + pow((AllPoints[i + 1].getY() - AllPoints[i].getY()), 2));
@@ -56,8 +57,6 @@ ClosedPolygonalChain::ClosedPolygonalChain(const ClosedPolygonalChain& other)
 
 float ClosedPolygonalChain::perimeter() const {
 	float Perimeter = 0;
-	//fixed memory leak
-	//fixed use perimeter from base class
 	Perimeter = PolygonalChain::perimeter();
 	Perimeter += (float)sqrt(pow((AllPoints[0].getX() - AllPoints[PointNum - 1].getX()), 2) + pow((AllPoints[0].getY() - AllPoints[PointNum - 1].getY()), 2));
 
