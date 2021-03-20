@@ -1,7 +1,8 @@
 #pragma once
 #include <math.h>
-#include <memory.h>
+#include<algorithm>
 #define PI 3.14159265
+
 class Point {
 public:
 	Point(int x = 0, int y = 0);
@@ -38,8 +39,8 @@ public:
 	int getN() const;
 
 protected:
-	int PointNum;
-	Point* AllPoints;
+	int pointNum;
+	Point* allPoints;
 };
 
 class ClosedPolygonalChain : public PolygonalChain {
