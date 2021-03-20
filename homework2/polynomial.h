@@ -1,6 +1,7 @@
 #pragma once
 #include <math.h>
 #include <iostream>
+#include <algorithm>
 
 class Polynomial {
 public:

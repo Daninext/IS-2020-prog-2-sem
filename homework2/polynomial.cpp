@@ -11,9 +11,7 @@ Polynomial::Polynomial(int minimum, int maximum, int* nums)
 	:min_(minimum), max_(maximum)
 {
 	sequenceMembers = new int[max_ - min_ + 1];
-	for (int i = 0; i != max_ - min_ + 1; i++) {
-		sequenceMembers[i] = nums[i];
-	}
+	std::copy_n(nums, max_ - min_ + 1, sequenceMembers);
 }
 
 Polynomial::Polynomial(const Polynomial& other)
