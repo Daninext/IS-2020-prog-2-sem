@@ -159,7 +159,7 @@ int& Polynomial::operator[](int i) {
 	}
 }
 
-const int& Polynomial::operator[](int i) const {
+int Polynomial::operator[](int i) const {
 	if (i >= min_ && i <= max_) {
 		return sequenceMembers[i - min_];
 	}
