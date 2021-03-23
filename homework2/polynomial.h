@@ -45,7 +45,7 @@ public:
 
 	int& operator[](int i);
 
-	const int& operator[](int i) const;
+	int operator[](int i) const;
 
 	friend std::ostream& operator<<(std::ostream& strm, const Polynomial& other);
 

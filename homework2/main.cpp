@@ -47,7 +47,6 @@ void PolynomialOperators() {
    	auto g = b;
    	g[3] = 0;
    	assert(g == b);
-   	cerr << "I am in the end";
 }
 
 
