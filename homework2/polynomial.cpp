@@ -42,9 +42,7 @@ Polynomial operator+=(const Polynomial& lother, const Polynomial& rother) {
 	int realMin = lother.min_ > rother.min_ ? rother.min_ : lother.min_;
 
 	int* nums = new int[realMax - realMin + 1];
-	for (int i = 0; i != realMax - realMin + 1; i++) {
-		nums[i] = 0;
-	}
+	std::for_each(nums, nums + realMax - realMin + 1, [](int& num) {num = 0;});
 
 	for (int i = realMax - realMin; i != -1; i--) {
 		if (i + realMin >= lother.min_ && i + realMin <= lother.max_) {
@@ -65,26 +63,8 @@ Polynomial operator-(const Polynomial& lother, const Polynomial& rother) {
 }
 
 Polynomial operator-=(const Polynomial& lother, const Polynomial& rother) {
-	int realMax = lother.max_ > rother.max_ ? lother.max_ : rother.max_;
-	int realMin = lother.min_ > rother.min_ ? rother.min_ : lother.min_;
-
-	int* nums = new int[realMax - realMin + 1];
-	for (int i = 0; i != realMax - realMin + 1; i++) {
-		nums[i] = 0;
-	}
-
-	for (int i = realMax - realMin; i != -1; i--) {
-		if (i + realMin >= lother.min_ && i + realMin <= lother.max_) {
-			nums[i] -= lother[i + realMin];
-		}
-
-		if (i + realMin >= rother.min_ && i + realMin <= rother.max_) {
-			nums[i] -= rother[i + realMin];
-		}
-	}
-
-	Polynomial tmp = Polynomial(realMin, realMax, nums);
-	return tmp;
+	Polynomial tmp = Polynomial(rother.min_, rother.max_, rother.sequenceMembers);
+	return (lother += (-tmp));
 }
 
 Polynomial Polynomial::operator-() {
@@ -117,9 +97,7 @@ Polynomial operator*=(const Polynomial& lother, const Polynomial& rother) {
 	int newMin = lother.min_ + rother.min_;
 
 	int* nums = new int[newMax - newMin + 1];
-	for (int i = 0; i != newMax - newMin + 1; i++) {
-		nums[i] = 0;
-	}
+	std::for_each(nums, nums + newMax - newMin + 1, [](int& num) {num = 0; });
 
 	for (int i = lother.max_ - lother.min_; i != -1; i--) {
 		for (int j = rother.max_ - rother.min_; j != -1; j--) {
