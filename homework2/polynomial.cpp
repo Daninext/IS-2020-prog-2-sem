@@ -37,6 +37,7 @@ Polynomial operator+(const Polynomial& lother, const Polynomial& rother) {
 	return lother += rother;
 }
 
+//todo += return Polynomail&, *this
 Polynomial operator+=(const Polynomial& lother, const Polynomial& rother) {
 	int realMax = lother.max_ > rother.max_ ? lother.max_ : rother.max_;
 	int realMin = lother.min_ > rother.min_ ? rother.min_ : lother.min_;
@@ -255,6 +256,7 @@ std::istream& operator>>(std::istream& strm, Polynomial& other) {
 	return strm;
 }
 
+//todo get O(n)
 float Polynomial::get(int x) const {
 	float Sum = 0;
 	for (int i = max_ - min_; i != -1; i--) {

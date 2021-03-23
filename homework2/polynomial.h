@@ -11,6 +11,7 @@ public:
 
 	Polynomial(const Polynomial& other);
 
+	//todo default is not ok
 	~Polynomial() = default;
 
 	Polynomial& operator=(const Polynomial& other) = default;
