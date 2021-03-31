@@ -11,10 +11,10 @@ public:
 
 	Polynomial(const Polynomial& other);
 
-	//todo default is not ok
-	~Polynomial() = default;
+	//fixed default is not ok
+	~Polynomial();
 
-	Polynomial& operator=(const Polynomial& other) = default;
+	Polynomial& operator=(const Polynomial& other);
 
 	friend bool operator==(const Polynomial& lother, const Polynomial& rother);
 
@@ -22,11 +22,11 @@ public:
 
 	friend Polynomial operator+(const Polynomial& lother, const Polynomial& rother);
 
-	friend Polynomial operator+=(const Polynomial& lother, const Polynomial& rother);
+	Polynomial& operator+=(const Polynomial& rother);
 
-	friend Polynomial operator-(const Polynomial& lother, const Polynomial& rother);
+	friend Polynomial operator-(Polynomial& lother, const Polynomial& rother);
 
-	friend Polynomial operator-=(const Polynomial& lother, const Polynomial& rother);
+	friend Polynomial& operator-=(Polynomial& lother, const Polynomial& rother);
 
 	Polynomial operator-();
 
@@ -40,9 +40,9 @@ public:
 
 	friend Polynomial operator*=(const Polynomial& lother, const Polynomial& rother);
 
-	friend Polynomial operator*=(const Polynomial& other, int num);
+	Polynomial& operator*=(int num);
 
-	friend Polynomial operator/=(const Polynomial& other, int num);
+	Polynomial& operator/=(int num);
 
 	int& operator[](int i);
 
@@ -55,7 +55,9 @@ public:
 	float get(int x) const;
 
 protected:
-	int* sequenceMembers;
+	mutable int* sequenceMembers;
 	int min_;
 	int max_;
+
+	void resizebuff(int* newbuff,int* oldbuff, int down, int target);
 };

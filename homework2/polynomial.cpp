@@ -3,8 +3,7 @@
 Polynomial::Polynomial(int minimum, int maximum)
 	:min_(minimum), max_(maximum)
 {
-	sequenceMembers = new int[1];
-	sequenceMembers[0] = 0;
+	sequenceMembers = new int[1]();
 }
 
 Polynomial::Polynomial(int minimum, int maximum, int* nums)
@@ -15,55 +14,78 @@ Polynomial::Polynomial(int minimum, int maximum, int* nums)
 }
 
 Polynomial::Polynomial(const Polynomial& other)
-	: sequenceMembers(other.sequenceMembers), min_(other.min_), max_(other.max_)
-{ }
+	: min_(other.min_), max_(other.max_)
+{ 
+	sequenceMembers = new int[max_ - min_ + 1];
+	std::copy_n(other.sequenceMembers, max_ - min_ + 1, sequenceMembers);
+}
 
 bool operator==(const Polynomial& lother, const Polynomial& rother) {
 	int max__ = lother.max_ > rother.max_ ? lother.max_ : rother.max_;
 	int min__ = lother.min_ > rother.min_ ? rother.min_ : lother.min_;
 	for (int i = max__ - min__; i != -1; i--) {
-		if (lother[i + min__] != rother[i + min__])
+		if (lother[i + min__] != rother[i + min__]) {
 			return false;
+		}
 	}
 
 	return true;
+}
+
+Polynomial::~Polynomial() {
+	delete[] sequenceMembers;
+}
+
+Polynomial& Polynomial::operator=(const Polynomial& other) {
+	this->max_ = other.max_;
+	this->min_ = other.min_;
+
+	delete[] this->sequenceMembers;
+
+	sequenceMembers = new int[max_ - min_ + 1];
+	std::copy_n(other.sequenceMembers, max_ - min_ + 1, sequenceMembers);
+
+	return *this;
 }
 
 bool Polynomial::operator!=(const Polynomial& other) {
 	return !(*this == other);
 }
 
-Polynomial operator+(const Polynomial& lother, const Polynomial& rother) {
-	return lother += rother;
+Polynomial operator+(const Polynomial& lother, const Polynomial& rother){
+	Polynomial lo = lother; Polynomial ro = rother;
+	return lo += ro;
 }
 
-//todo += return Polynomail&, *this
-Polynomial operator+=(const Polynomial& lother, const Polynomial& rother) {
-	int realMax = lother.max_ > rother.max_ ? lother.max_ : rother.max_;
-	int realMin = lother.min_ > rother.min_ ? rother.min_ : lother.min_;
+//fixed += return Polynomail&, *this
+Polynomial& Polynomial::operator+=(const Polynomial& rother) {
+	int realMax = max_ > rother.max_ ? max_ : rother.max_;
+	int realMin = min_ > rother.min_ ? rother.min_ : min_;
 
-	int* nums = new int[realMax - realMin + 1];
-	std::for_each(nums, nums + realMax - realMin + 1, [](int& num) {num = 0;});
+	int* lnums = new int[realMax - realMin + 1]();
+	resizebuff(lnums, this->sequenceMembers, min_ - realMin, max_ - min_ + 1);
+	int* rnums = new int[realMax - realMin + 1]();
+	resizebuff(rnums, rother.sequenceMembers, rother.min_ - realMin, rother.max_ - rother.min_ + 1);
 
-	for (int i = realMax - realMin; i != -1; i--) {
-		if (i + realMin >= lother.min_ && i + realMin <= lother.max_) {
-			nums[i] += lother[i + realMin];
-		}
-
-		if (i + realMin >= rother.min_ && i + realMin <= rother.max_) {
-			nums[i] += rother[i + realMin];
-		}
+	for (int i = 0; i != realMax - realMin + 1; i++) {
+		lnums[i] += rnums[i];
 	}
 
-	Polynomial tmp = Polynomial(realMin, realMax, nums);
-	return tmp;
+	this->max_ = realMax;
+	this->min_ = realMin;
+	delete[] sequenceMembers;
+	this->sequenceMembers = lnums;
+
+	delete[] rnums;
+
+	return *this;
 }
 
-Polynomial operator-(const Polynomial& lother, const Polynomial& rother) {
+Polynomial operator-(Polynomial& lother, const Polynomial& rother) {
 	return lother -= rother;
 }
 
-Polynomial operator-=(const Polynomial& lother, const Polynomial& rother) {
+Polynomial& operator-=(Polynomial& lother, const Polynomial& rother) {
 	Polynomial tmp = Polynomial(rother.min_, rother.max_, rother.sequenceMembers);
 	return (lother += (-tmp));
 }
@@ -82,23 +104,25 @@ Polynomial operator*(const Polynomial& lother, const Polynomial& rother) {
 }
 
 Polynomial operator*(const Polynomial& other, int num) {
-	return (other *= num);
+	auto o = other;
+	return (o *= num);
 }
 
 Polynomial operator*(int num, const Polynomial& other) {
-	return (other * num);
+	auto o = other;
+	return (o *= num);
 }
 
 Polynomial operator/(const Polynomial& other, int num) {
-	return (other /= num);
+	auto o = other;
+	return (o /= num);
 }
 
 Polynomial operator*=(const Polynomial& lother, const Polynomial& rother) {
 	int newMax = lother.max_ + rother.max_;
 	int newMin = lother.min_ + rother.min_;
 
-	int* nums = new int[newMax - newMin + 1];
-	std::for_each(nums, nums + newMax - newMin + 1, [](int& num) {num = 0; });
+	int* nums = new int[newMax - newMin + 1]();
 
 	for (int i = lother.max_ - lother.min_; i != -1; i--) {
 		for (int j = rother.max_ - rother.min_; j != -1; j--) {
@@ -110,22 +134,30 @@ Polynomial operator*=(const Polynomial& lother, const Polynomial& rother) {
 	return tmp;
 }
 
-Polynomial operator*=(const Polynomial& other, int num) {
-	Polynomial tmp = Polynomial(other.min_, other.max_, other.sequenceMembers);
-	for (int i = 0; i != tmp.max_ - tmp.min_ + 1; i++) {
-		tmp.sequenceMembers[i] *= num;
+Polynomial& Polynomial::operator*=(int num) {
+	int* nums = new int[max_ - min_ + 1]();
+	std::copy_n(sequenceMembers, max_ - min_ + 1, nums);
+
+	for (int i = 0; i != max_ - min_ + 1; i++) {
+		nums[i] *= num;
 	}
 
-	return tmp;
+	sequenceMembers = nums;
+
+	return *this;
 }
 
-Polynomial operator/=(const Polynomial& other, int num) {
-	Polynomial tmp = Polynomial(other.min_, other.max_, other.sequenceMembers);
-	for (int i = 0; i != tmp.max_ - tmp.min_ + 1; i++) {
-		tmp.sequenceMembers[i] /= num;
+Polynomial& Polynomial::operator/=(int num) {
+	int* nums = new int[max_ - min_ + 1]();
+	std::copy_n(sequenceMembers, max_ - min_ + 1, nums);
+
+	for (int i = 0; i != max_ - min_ + 1; i++) {
+		nums[i] /= num;
 	}
 
-	return tmp;
+	sequenceMembers = nums;
+
+	return *this;
 }
 
 int& Polynomial::operator[](int i) {
@@ -134,22 +166,16 @@ int& Polynomial::operator[](int i) {
 	}
 
 	if (i > max_) {
-		int* nums = new int[i - min_ + 1];
+		int* nums = new int[i - min_ + 1]();
 		for (int j = 0; j != max_ - min_ + 1; j++) {
 			nums[j] = sequenceMembers[j];
-		}
-		for (int j = max_ - min_ + 1; j != i - min_ + 1; j++) {
-			nums[j] = 0;
 		}
 		*this = Polynomial(min_, i, nums);
 
 		return sequenceMembers[i - min_];
 	}
 	else {
-		int* nums = new int[max_ - i + 1];
-		for (int j = 0; j != min_ - i; j++) {
-			nums[j] = 0;
-		}
+		int* nums = new int[max_ - i + 1]();
 		for (int j = min_ - i; j != max_ - min_ + 1; j++) {
 			nums[j] = sequenceMembers[j - max_ + 1];
 		}
@@ -256,11 +282,17 @@ std::istream& operator>>(std::istream& strm, Polynomial& other) {
 	return strm;
 }
 
-//todo get O(n)
+//fixed get O(n)
 float Polynomial::get(int x) const {
-	float Sum = 0;
+	float num = pow(x, max_);
+	float sum = 0;
 	for (int i = max_ - min_; i != -1; i--) {
-		Sum += pow(x, (i + min_)) * sequenceMembers[i];
+		sum += num * sequenceMembers[i];
+		num /= x;
 	}
-	return Sum;
+	return sum;
+}
+
+void Polynomial::resizebuff(int* newbuff, int* oldbuff, int down, int target) {
+	std::copy_n(oldbuff, target, newbuff + down);
 }
