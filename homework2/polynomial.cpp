@@ -84,7 +84,7 @@ Polynomial operator-(Polynomial& lother, const Polynomial& rother) {
 	return lother -= rother;
 }
 
-//fixed without creating new object
+//todo without creating new object
 Polynomial& operator-=(Polynomial& lother, const Polynomial& rother) {
 	auto ro = rother;
 	return (lother += (-ro));
@@ -146,7 +146,6 @@ Polynomial& Polynomial::operator*=(int num) {
 Polynomial& Polynomial::operator/=(int num) {
 	int* nums = new int[max_ - min_ + 1]();
 	std::copy_n(sequenceMembers, max_ - min_ + 1, nums);
-	//fixed use for_each
 	std::for_each(nums, nums + max_ - min_ + 1, [num](int& num_) {num_ /= num; });
 
 	sequenceMembers = nums;
