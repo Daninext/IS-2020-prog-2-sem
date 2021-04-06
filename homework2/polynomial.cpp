@@ -92,9 +92,7 @@ Polynomial& operator-=(Polynomial& lother, const Polynomial& rother) {
 
 Polynomial Polynomial::operator-() {
 	Polynomial tmp = Polynomial(min_, max_, sequenceMembers);
-	for (int i = 0; i != max_ - min_ + 1; i++) {
-		tmp.sequenceMembers[i] = -sequenceMembers[i];
-	}
+	std::for_each(tmp.sequenceMembers, tmp.sequenceMembers + max_ - min_ + 1, [](int& nums) {nums *= -1; });
 
 	return tmp;
 }
