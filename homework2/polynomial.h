@@ -24,11 +24,11 @@ public:
 
 	Polynomial& operator+=(const Polynomial& rother);
 
-	friend Polynomial operator-(Polynomial& lother, const Polynomial& rother);
+	friend Polynomial operator-(const Polynomial& lother, const Polynomial& rother);
 
 	friend Polynomial& operator-=(Polynomial& lother, const Polynomial& rother);
 
-	Polynomial operator-();
+	Polynomial operator-() const;
 
 	friend Polynomial operator*(const Polynomial& lother, const Polynomial& rother);
 

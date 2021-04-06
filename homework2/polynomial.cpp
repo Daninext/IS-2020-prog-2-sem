@@ -80,17 +80,17 @@ Polynomial& Polynomial::operator+=(const Polynomial& rother) {
 	return *this;
 }
 
-Polynomial operator-(Polynomial& lother, const Polynomial& rother) {
-	return lother -= rother;
+Polynomial operator-(const Polynomial& lother, const Polynomial& rother) {
+	Polynomial lo = lother; Polynomial ro = rother;
+	return lo -= ro;
 }
 
-//todo without creating new object
+//fixed without creating new object
 Polynomial& operator-=(Polynomial& lother, const Polynomial& rother) {
-	auto ro = rother;
-	return (lother += (-ro));
+	return (lother += (-rother));
 }
 
-Polynomial Polynomial::operator-() {
+Polynomial Polynomial::operator-() const {
 	Polynomial tmp = Polynomial(min_, max_, sequenceMembers);
 	std::for_each(tmp.sequenceMembers, tmp.sequenceMembers + max_ - min_ + 1, [](int& nums) {nums *= -1; });
 
@@ -135,7 +135,6 @@ Polynomial operator*=(const Polynomial& lother, const Polynomial& rother) {
 Polynomial& Polynomial::operator*=(int num) {
 	int* nums = new int[max_ - min_ + 1]();
 	std::copy_n(sequenceMembers, max_ - min_ + 1, nums);
-
 	std::for_each(nums, nums + max_ - min_ + 1, [num](int& num_) {num_ *= num; });
 
 	sequenceMembers = nums;
