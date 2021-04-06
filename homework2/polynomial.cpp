@@ -57,7 +57,6 @@ Polynomial operator+(const Polynomial& lother, const Polynomial& rother){
 	return lo += ro;
 }
 
-//fixed += return Polynomail&, *this
 Polynomial& Polynomial::operator+=(const Polynomial& rother) {
 	int realMax = max_ > rother.max_ ? max_ : rother.max_;
 	int realMin = min_ > rother.min_ ? rother.min_ : min_;
@@ -85,6 +84,7 @@ Polynomial operator-(Polynomial& lother, const Polynomial& rother) {
 	return lother -= rother;
 }
 
+//todo without creating new object
 Polynomial& operator-=(Polynomial& lother, const Polynomial& rother) {
 	Polynomial tmp = Polynomial(rother.min_, rother.max_, rother.sequenceMembers);
 	return (lother += (-tmp));
@@ -150,7 +150,7 @@ Polynomial& Polynomial::operator*=(int num) {
 Polynomial& Polynomial::operator/=(int num) {
 	int* nums = new int[max_ - min_ + 1]();
 	std::copy_n(sequenceMembers, max_ - min_ + 1, nums);
-
+	//todo use for_each
 	for (int i = 0; i != max_ - min_ + 1; i++) {
 		nums[i] /= num;
 	}
@@ -282,7 +282,6 @@ std::istream& operator>>(std::istream& strm, Polynomial& other) {
 	return strm;
 }
 
-//fixed get O(n)
 float Polynomial::get(int x) const {
 	float num = pow(x, max_);
 	float sum = 0;
