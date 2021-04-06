@@ -87,7 +87,7 @@ Polynomial operator-(const Polynomial& lother, const Polynomial& rother) {
 
 //fixed without creating new object
 Polynomial& operator-=(Polynomial& lother, const Polynomial& rother) {
-	return (lother += (-rother));
+	return Polynomial::minus(lother, rother);
 }
 
 Polynomial Polynomial::operator-() const {
@@ -286,4 +286,12 @@ float Polynomial::get(int x) const {
 
 void Polynomial::resizebuff(int* newbuff, int* oldbuff, int down, int target) {
 	std::copy_n(oldbuff, target, newbuff + down);
+}
+
+Polynomial& Polynomial::minus(Polynomial& lo, const Polynomial& ro) {
+	std::for_each(lo.sequenceMembers, lo.sequenceMembers + lo.max_ - lo.min_ + 1, [](int& nums) {nums *= -1; });
+	lo += ro;
+
+	std::for_each(lo.sequenceMembers, lo.sequenceMembers + lo.max_ - lo.min_ + 1, [](int& nums) {nums *= -1; });
+	return lo;
 }

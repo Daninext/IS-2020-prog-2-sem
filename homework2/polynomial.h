@@ -60,4 +60,6 @@ protected:
 	int max_;
 
 	void resizebuff(int* newbuff,int* oldbuff, int down, int target);
+
+	static Polynomial& minus(Polynomial& lo, const Polynomial& ro);
 };
