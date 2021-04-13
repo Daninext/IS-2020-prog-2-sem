@@ -11,29 +11,15 @@
 #include "stoper.h"
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/functional/hash.hpp>
 
 using namespace std;
 
-const int TABLE_SIZE = 10000;
-
-vector<vector<u16string>> names;
+map<u16string, int> namesScore;
 vector<u16string> vehTypes;
-vector<vector<int>> namesValue;
-map<u16string, vector<vector<Route>>> allRoutes;
+map<u16string, map<string, Route>> allRoutes;
 
 wstring_convert<codecvt_utf8_utf16<char16_t>, char16_t> utf16conv;
 wstring_convert<codecvt_utf8<char16_t>, char16_t> converter;
-
-int hashCode(std::string name)
-{
-    return abs((int)boost::hash<string>()(name)) % TABLE_SIZE;
-}
-
-int u16hashCode(std::u16string name)
-{
-    return abs((int)boost::hash<u16string>()(name)) % TABLE_SIZE;
-}
 
 int main()
 {
@@ -44,9 +30,6 @@ int main()
     pugi::xml_parse_result result = doc.load_file("data.xml");
     if (!result)
         return -1;
-
-    names.resize(TABLE_SIZE);
-    namesValue.resize(TABLE_SIZE);
 
     for (pugi::xml_node station : doc.child("dataset").children("transport_station"))
     {
@@ -66,32 +49,23 @@ int main()
         u16string u16name = utf16conv.from_bytes(u8name);
 
         if (allRoutes.count(u16name) == 0) {
-            allRoutes[u16name].resize(TABLE_SIZE);
             vehTypes.push_back(u16name);
         } 
 
         for (int i = 0; i != vs_routes.size(); i++) {
-            int hash = hashCode(vs_routes[i]);
+            if (vs_routes[i] != " " && vs_routes[i] != "")
+                if (allRoutes[u16name].count(vs_routes[i]) == 0) {
+                    Route r;
+                    r.SetName(vs_routes[i]);
+                    r.ItValue();
+                    r.AddCoord(x, y);
 
-            bool flag = false; int j;
-            for (j = 0; j != allRoutes[u16name][hash].size(); j++) {
-                if (allRoutes[u16name][hash][j].name() == vs_routes[i]) {
-                    flag = true;
-                    break;
+                    allRoutes[u16name].insert(make_pair(vs_routes[i], r));
                 }
-            }
-
-            if (flag) {
-                allRoutes[u16name][hash][j].ItValue();
-                allRoutes[u16name][hash][j].AddCoord(x, y);
-            }
-            else {
-                Route r;
-                r.SetName(vs_routes[i]);
-                r.ItValue();
-                r.AddCoord(x, y);
-                allRoutes[u16name][hash].push_back(r);
-            }
+                else {
+                    allRoutes[u16name][vs_routes[i]].ItValue();
+                    allRoutes[u16name][vs_routes[i]].AddCoord(x, y);
+                }
         }
 
         string s_loc = station.child("location").text().as_string();
@@ -115,37 +89,23 @@ int main()
         boost::split(vu16_loc, u16_loc, boost::is_any_of(","));
 
         for (int i = 0; i != vu16_loc.size(); i++) {
-            int hash = u16hashCode(vu16_loc[i]);
-
-            int k; bool flag = false;
-            for (k = 0; k != names[hash].size(); k++) {
-                if (names[hash][k] == vu16_loc[i]) {
-                    flag = true;
-                    break;
+            if (vu16_loc[i].size() != 0)
+                if (namesScore.count(vu16_loc[i]) == 0) {
+                    namesScore.insert(make_pair(vu16_loc[i], 1));
                 }
-            }
-
-            if (flag) {
-                namesValue[hash][k]++;
-            }
-            else {
-                names[hash].push_back(vu16_loc[i]);
-                namesValue[hash].push_back(1);
-            }
+                else {
+                    namesScore[vu16_loc[i]]++;
+                }
         }
     }
 
     for (int i = 0; i != vehTypes.size(); i++) {
         string maxRouteName;
         int maxRouteValue = 0;
-        for (int j = 0; j != TABLE_SIZE; j++) {
-            for (int k = 0; k != allRoutes[vehTypes[i]][j].size(); k++) {
-                if (allRoutes[vehTypes[i]][j][k].name() != "none") {
-                    if (allRoutes[vehTypes[i]][j][k].value() > maxRouteValue) {
-                        maxRouteValue = allRoutes[vehTypes[i]][j][k].value();
-                        maxRouteName = allRoutes[vehTypes[i]][j][k].name();
-                    }
-                }
+        for (auto& t : allRoutes[vehTypes[i]]) {
+            if (t.second.value() > maxRouteValue) {
+                maxRouteValue = t.second.value();
+                maxRouteName = t.second.name();
             }
         }
 
@@ -157,15 +117,11 @@ int main()
     for (int i = 0; i != vehTypes.size(); i++) {
         string maxRouteName;
         float maxRouteDistance = 0;
-        for (int j = 0; j != TABLE_SIZE; j++) {
-            for (int k = 0; k != allRoutes[vehTypes[i]][j].size(); k++) {
-                if (allRoutes[vehTypes[i]][j][k].name() != "none") {
-                    float dist = allRoutes[vehTypes[i]][j][k].GetSize();
-                    if (dist > maxRouteDistance) {
-                        maxRouteDistance = dist;
-                        maxRouteName = allRoutes[vehTypes[i]][j][k].name();
-                    }
-                }
+        for (auto& t : allRoutes[vehTypes[i]]) {
+            float dist = t.second.GetSize();
+            if (dist > maxRouteDistance) {
+                maxRouteDistance = dist;
+                maxRouteName = t.second.name();
             }
         }
 
@@ -176,14 +132,10 @@ int main()
 
     int maxValue = 0;
     u16string maxName;
-    for (int i = 0; i != TABLE_SIZE; i++) {
-        for (int k = 0; k != names[i].size(); k++) {
-            if (names[i][k].size() != 0) {
-                if (namesValue[i][k] > maxValue) {
-                    maxValue = namesValue[i][k];
-                    maxName = names[i][k];
-                }
-            }
+    for (auto& t : namesScore) {
+        if (t.second > maxValue) {
+            maxValue = t.second;
+            maxName = t.first;
         }
     }
 
