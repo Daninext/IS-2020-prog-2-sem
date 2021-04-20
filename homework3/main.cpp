@@ -14,6 +14,7 @@
 
 using namespace std;
 
+//todo first second
 map<u16string, int> namesScore;
 vector<u16string> vehTypes;
 map<u16string, map<string, Route>> allRoutes;
