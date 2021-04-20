@@ -112,11 +112,11 @@ int main()
     for (int i = 0; i != vehTypes.size(); i++) {
         string maxRouteName;
         int maxRouteValue = 0;
-        for (auto l = routeName.begin(); l != routeName.end(); l++)
-            if (allRoutes[vehTypes[i]].count(*l) != 0)
-                if (allRoutes[vehTypes[i]][*l].value() > maxRouteValue) {
-                    maxRouteValue = allRoutes[vehTypes[i]][*l].value();
-                    maxRouteName = allRoutes[vehTypes[i]][*l].name();
+        for (auto l : routeName)
+            if (allRoutes[vehTypes[i]].count(l) != 0)
+                if (allRoutes[vehTypes[i]][l].value() > maxRouteValue) {
+                    maxRouteValue = allRoutes[vehTypes[i]][l].value();
+                    maxRouteName = allRoutes[vehTypes[i]][l].name();
                 }
 
         cout << "Max Route - \"" << maxRouteName << "\" = " << maxRouteValue << " (" << converter.to_bytes(vehTypes[i]) << ")\n";
@@ -128,12 +128,12 @@ int main()
         string maxRouteName;
         float maxRouteDistance = 0;
 
-        for (auto l = routeName.begin(); l != routeName.end(); l++)
-            if (allRoutes[vehTypes[i]].count(*l) != 0) {
-                float dist = allRoutes[vehTypes[i]][*l].GetSize();
+        for (auto l : routeName)
+            if (allRoutes[vehTypes[i]].count(l) != 0) {
+                float dist = allRoutes[vehTypes[i]][l].GetSize();
                 if (dist > maxRouteDistance) {
                     maxRouteDistance = dist;
-                    maxRouteName = allRoutes[vehTypes[i]][*l].name();
+                    maxRouteName = allRoutes[vehTypes[i]][l].name();
                 }
             }
 
@@ -144,10 +144,11 @@ int main()
 
     int maxValue = 0;
     u16string maxName;
-    for (auto l = streetName.begin(); l != streetName.end(); l++)
-        if (namesScore[*l] > maxValue) {
-            maxValue = namesScore[*l];
-            maxName = *l;
+    //fixed use range-based for
+    for (auto l : streetName)
+        if (namesScore[l] > maxValue) {
+            maxValue = namesScore[l];
+            maxName = l;
         }
 
     cout << "Street with max stops - " << converter.to_bytes(maxName) << " = " << maxValue << endl;
