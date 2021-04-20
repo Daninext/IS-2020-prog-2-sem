@@ -144,6 +144,7 @@ int main()
 
     int maxValue = 0;
     u16string maxName;
+    //todo use range-based for
     for (auto l = streetName.begin(); l != streetName.end(); l++)
         if (namesScore[*l] > maxValue) {
             maxValue = namesScore[*l];
