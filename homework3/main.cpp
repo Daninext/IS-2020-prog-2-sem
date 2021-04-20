@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <set>
 #include <sstream>
 #include <locale>
 #include <codecvt>
@@ -14,8 +15,11 @@
 
 using namespace std;
 
+//fixed first second
+set<u16string> streetName;
 map<u16string, int> namesScore;
 vector<u16string> vehTypes;
+set<string> routeName;
 map<u16string, map<string, Route>> allRoutes;
 
 wstring_convert<codecvt_utf8_utf16<char16_t>, char16_t> utf16conv;
@@ -53,7 +57,7 @@ int main()
         } 
 
         for (int i = 0; i != vs_routes.size(); i++) {
-            if (vs_routes[i] != " " && vs_routes[i] != "")
+            if (vs_routes[i] != " " && vs_routes[i] != "") {
                 if (allRoutes[u16name].count(vs_routes[i]) == 0) {
                     Route r;
                     r.SetName(vs_routes[i]);
@@ -66,6 +70,9 @@ int main()
                     allRoutes[u16name][vs_routes[i]].ItValue();
                     allRoutes[u16name][vs_routes[i]].AddCoord(x, y);
                 }
+
+                routeName.insert(vs_routes[i]);
+            }
         }
 
         string s_loc = station.child("location").text().as_string();
@@ -89,25 +96,28 @@ int main()
         boost::split(vu16_loc, u16_loc, boost::is_any_of(","));
 
         for (int i = 0; i != vu16_loc.size(); i++) {
-            if (vu16_loc[i].size() != 0)
+            if (vu16_loc[i].size() != 0) {
                 if (namesScore.count(vu16_loc[i]) == 0) {
                     namesScore.insert(make_pair(vu16_loc[i], 1));
                 }
                 else {
                     namesScore[vu16_loc[i]]++;
                 }
+
+                streetName.insert(vu16_loc[i]);
+            }
         }
     }
 
     for (int i = 0; i != vehTypes.size(); i++) {
         string maxRouteName;
         int maxRouteValue = 0;
-        for (auto& t : allRoutes[vehTypes[i]]) {
-            if (t.second.value() > maxRouteValue) {
-                maxRouteValue = t.second.value();
-                maxRouteName = t.second.name();
-            }
-        }
+        for (auto l = routeName.begin(); l != routeName.end(); l++)
+            if (allRoutes[vehTypes[i]].count(*l) != 0)
+                if (allRoutes[vehTypes[i]][*l].value() > maxRouteValue) {
+                    maxRouteValue = allRoutes[vehTypes[i]][*l].value();
+                    maxRouteName = allRoutes[vehTypes[i]][*l].name();
+                }
 
         cout << "Max Route - \"" << maxRouteName << "\" = " << maxRouteValue << " (" << converter.to_bytes(vehTypes[i]) << ")\n";
     }
@@ -117,13 +127,15 @@ int main()
     for (int i = 0; i != vehTypes.size(); i++) {
         string maxRouteName;
         float maxRouteDistance = 0;
-        for (auto& t : allRoutes[vehTypes[i]]) {
-            float dist = t.second.GetSize();
-            if (dist > maxRouteDistance) {
-                maxRouteDistance = dist;
-                maxRouteName = t.second.name();
+
+        for (auto l = routeName.begin(); l != routeName.end(); l++)
+            if (allRoutes[vehTypes[i]].count(*l) != 0) {
+                float dist = allRoutes[vehTypes[i]][*l].GetSize();
+                if (dist > maxRouteDistance) {
+                    maxRouteDistance = dist;
+                    maxRouteName = allRoutes[vehTypes[i]][*l].name();
+                }
             }
-        }
 
         cout << "Max distance Route - \"" << maxRouteName << "\" (" << converter.to_bytes(vehTypes[i]) << ")\n";
     }
@@ -132,12 +144,11 @@ int main()
 
     int maxValue = 0;
     u16string maxName;
-    for (auto& t : namesScore) {
-        if (t.second > maxValue) {
-            maxValue = t.second;
-            maxName = t.first;
+    for (auto l = streetName.begin(); l != streetName.end(); l++)
+        if (namesScore[*l] > maxValue) {
+            maxValue = namesScore[*l];
+            maxName = *l;
         }
-    }
 
     cout << "Street with max stops - " << converter.to_bytes(maxName) << " = " << maxValue << endl;
 
