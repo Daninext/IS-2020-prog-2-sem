@@ -1,6 +1,6 @@
 #pragma once
 #include <functional>
-
+//todo T is a bad name for iterator                
 template<class T, class cmp_t>
 bool allOf(T first, T last, cmp_t cmp) {
 	while (first != last) {
