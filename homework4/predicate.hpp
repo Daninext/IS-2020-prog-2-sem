@@ -1,8 +1,8 @@
 #pragma once
 #include <functional>
-//todo T is a bad name for iterator                
-template<class T, class cmp_t>
-bool allOf(T first, T last, cmp_t cmp) {
+//fixed T is a bad name for iterator                
+template<class Iterator, class cmp_t>
+bool allOf(Iterator first, Iterator last, cmp_t cmp) {
 	while (first != last) {
 		if (!cmp(*first))
 			return false;
@@ -11,8 +11,8 @@ bool allOf(T first, T last, cmp_t cmp) {
 	return true;
 }
 
-template<class T, class cmp_t>
-bool anyOf(T first, T last, cmp_t cmp) {
+template<class Iterator, class cmp_t>
+bool anyOf(Iterator first, Iterator last, cmp_t cmp) {
 	while (first != last) {
 		if (cmp(*first))
 			return true;
@@ -21,8 +21,8 @@ bool anyOf(T first, T last, cmp_t cmp) {
 	return false;
 }
 
-template<class T, class cmp_t>
-bool noneOf(T first, T last, cmp_t cmp) {
+template<class Iterator, class cmp_t>
+bool noneOf(Iterator first, Iterator last, cmp_t cmp) {
 	while (first != last) {
 		if (cmp(*first))
 			return false;
@@ -31,8 +31,8 @@ bool noneOf(T first, T last, cmp_t cmp) {
 	return true;
 }
 
-template<class T, class cmp_t>
-bool oneOf(T first, T last, cmp_t cmp) {
+template<class Iterator, class cmp_t>
+bool oneOf(Iterator first, Iterator last, cmp_t cmp) {
 	bool flag = false;
 	while (first != last) {
 		if (cmp(*first) && !flag)
@@ -46,8 +46,8 @@ bool oneOf(T first, T last, cmp_t cmp) {
 	return false;
 }
 
-template<class T, class cmp_t = std::less<>>
-bool isSorted(T first, T last, cmp_t cmp = cmp_t()) {
+template<class Iterator, class cmp_t = std::less<>>
+bool isSorted(Iterator first, Iterator last, cmp_t cmp = cmp_t()) {
 	while (first != last - 1) {
 		if (!cmp(*first, *(first + 1)))
 			return false;
@@ -56,8 +56,8 @@ bool isSorted(T first, T last, cmp_t cmp = cmp_t()) {
 	return true;
 }
 
-template<class T, class cmp_t>
-bool isPartitioned(T first, T last, cmp_t cmp) {
+template<class Iterator, class cmp_t>
+bool isPartitioned(Iterator first, Iterator last, cmp_t cmp) {
 	if (cmp(*first)) {
 		while (cmp(*first) && first != last)
 			first++;
@@ -82,8 +82,8 @@ bool isPartitioned(T first, T last, cmp_t cmp) {
 	return true;
 }
 
-template<class T, class cmp_num>
-T findNot(T first, T last, cmp_num cmp) {
+template<class Iterator, class cmp_num>
+Iterator findNot(Iterator first, Iterator last, cmp_num cmp) {
 	while (first != last) {
 		if (*first != cmp)
 			return first;
@@ -92,9 +92,9 @@ T findNot(T first, T last, cmp_num cmp) {
 	return first;
 }
 
-template<class T, class cmp_num>
-T findBackward(T first, T last, cmp_num cmp) {
-	T tmp = last;
+template<class Iterator, class cmp_num>
+Iterator findBackward(Iterator first, Iterator last, cmp_num cmp) {
+	Iterator tmp = last;
 	last += (-1);
 	while (first != last) {
 		if (*last == cmp)
@@ -104,8 +104,8 @@ T findBackward(T first, T last, cmp_num cmp) {
 	return tmp;
 }
 
-template<class T, class cmp_t>
-bool isPalindrome(T first, T last, cmp_t cmp) {
+template<class Iterator, class cmp_t>
+bool isPalindrome(Iterator first, Iterator last, cmp_t cmp) {
 	last--;
 	while (first != last) {
 		if (!cmp(*first, *last))
