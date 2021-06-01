@@ -1,13 +1,14 @@
 #pragma once
+#include <exception>
 
 template <class T>
 class CircularBuffer {
-	template<typename T>
-	class Iter : public std::iterator<std::random_access_iterator_tag, T> {
+	template<typename ItType = T>
+	class Iter : public std::iterator<std::random_access_iterator_tag, ItType> {
 	private:
-		T* p;
+		ItType* p;
 		size_t offset, maxOffset;
-		typedef std::iterator<std::random_access_iterator_tag, T> base_template;
+		typedef std::iterator<std::random_access_iterator_tag, ItType> base_template;
 	public:
 		typedef typename base_template::value_type           value_type;
 		typedef typename base_template::pointer              pointer;
@@ -23,11 +24,11 @@ class CircularBuffer {
 
 		~Iter() { p = nullptr; offset = 0; maxOffset = 0; }
 
-		Iter(const Iter<T>& other)
+		Iter(const Iter<ItType>& other)
 			: p(other.p), offset(other.offset), maxOffset(other.maxOffset)
 		{ }
 
-		Iter<T>& operator=(const Iter<T>& other) {
+		Iter<ItType>& operator=(const Iter<ItType>& other) {
 			if (this != &other) {
 				p = other.p;
 				offset = other.offset;
@@ -36,7 +37,7 @@ class CircularBuffer {
 			return *this;
 		}
 
-		Iter<T>& operator++() {
+		Iter<ItType>& operator++() {
 			if (offset + 1 <= maxOffset)
 				++offset;
 			else
@@ -44,7 +45,7 @@ class CircularBuffer {
 			return *this;
 		}
 
-		Iter<T>& operator--() {
+		Iter<ItType>& operator--() {
 			if (offset <= 0)
 				offset = maxOffset;
 			else
@@ -52,14 +53,14 @@ class CircularBuffer {
 			return *this;
 		}
 
-		Iter<T>& operator--(int) {
-			Iter<T> tmp(*this);
+		Iter<ItType>& operator--(int) {
+			Iter<ItType> tmp(*this);
 			operator--();
 			return tmp;
 		}
 
-		Iter<T> operator++(int) {
-			Iter<T> tmp(this);
+		Iter<ItType> operator++(int) {
+			Iter<ItType> tmp(this);
 			operator++();
 			return tmp;
 		}
@@ -78,19 +79,19 @@ class CircularBuffer {
 			return p + offset + value.p + value.offset;
 		}
 
-		Iter<T> operator -(const int& value) const {
-			return Iter<T>(p, offset - value, maxOffset);
+		Iter<ItType> operator -(const int& value) const {
+			return Iter<ItType>(p, offset - value, maxOffset);
 		}
 
-		Iter<T> operator +(const int& value) const {
-			return Iter<T>(p, offset + value, maxOffset);
+		Iter<ItType> operator +(const int& value) const {
+			return Iter<ItType>(p, offset + value, maxOffset);
 		}
 
-		bool operator==(Iter<T>& other) { return (p + offset) == (other.p + other.offset); }
+		bool operator==(Iter<ItType>& other) { return (p + offset) == (other.p + other.offset); }
 
-		bool operator<(Iter<T>& other) { return (p + offset) < (other.p + other.offset); }
+		bool operator<(Iter<ItType>& other) { return (p + offset) < (other.p + other.offset); }
 
-		friend bool operator!=(Iter<T> one, Iter<T> other) { return (one.p + one.offset) != (other.p + other.offset); }
+		friend bool operator!=(Iter<ItType> one, Iter<ItType> other) { return (one.p + one.offset) != (other.p + other.offset); }
 		friend class CircularBuffer;
 	};
 private:
@@ -101,11 +102,12 @@ public:
 	CircularBuffer(size_t siz) 
 		: size(0), maxSize(siz) 
 	{
-		Iter<T> begin(new T[siz + 1], 0, maxSize);
+		v = new T[siz + 1];
+		Iter<T> begin(v, 0, maxSize);
 		_begin = begin;
 		_end = begin;
 	}
-	~CircularBuffer() { }
+	~CircularBuffer() { delete[] v; }
 
 	void addLast(T value) {
 		if (size < maxSize) {
@@ -128,20 +130,17 @@ public:
 		}
 	}
 
-	T delLast() {
+	void delLast() {
 		if (size > 0) {
 			size--;
 			--_end;
-			return *_end;
 		}
 	}
 
-	T delFirst() {
+	void delFirst() {
 		if (size > 0) {
-			T tmp = *_begin;
 			size--;
 			++_begin;
-			return tmp;
 		}
 	}
 
@@ -155,7 +154,7 @@ public:
 
 	T& operator[](size_t i) {
 		if (i >= size) {
-			//throw out_of_range("out of range");
+			throw std::out_of_range("out of range");
 		}
 		else {
 			Iter<T> tmp = _begin;
@@ -168,7 +167,7 @@ public:
 
 	T operator[](size_t i) const {
 		if (i >= size) {
-			//throw out_of_range("out of range");
+			throw std::out_of_range("out of range");
 		}
 		else {
 			Iter<T> tmp = _begin;
@@ -183,14 +182,16 @@ public:
 		T* tmp = new T[capacity + 1];
 		if (size > capacity)
 			size = capacity;
-		for (int i = 0; i != size; i++) {
+		for (size_t i = 0; i != size; i++) {
 			tmp[i] = this->operator[](i);
 		}
+		delete[] v;
+		v = tmp;
 		maxSize = capacity;
-		Iter<T> begin(tmp, 0, maxSize);
+		Iter<T> begin(v, 0, maxSize);
 		_begin = begin;
 		size_t endOffset = size ? size : 0;
-		Iter<T> end(tmp, endOffset, maxSize);
+		Iter<T> end(v, endOffset, maxSize);
 		_end = end;
 	}
 
