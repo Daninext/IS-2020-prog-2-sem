@@ -180,11 +180,9 @@ public:
 
 	void changeCapacity(size_t capacity) {
 		T* tmp = new T[capacity + 1];
+		std::copy_n(v, size, tmp);
 		if (size > capacity)
 			size = capacity;
-		for (size_t i = 0; i != size; i++) {
-			tmp[i] = this->operator[](i);
-		}
 		delete[] v;
 		v = tmp;
 		maxSize = capacity;
