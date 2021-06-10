@@ -4,17 +4,16 @@
 template <class T>
 class CircularBuffer {
 	template<typename ItType = T>
-	class Iter : public std::iterator<std::random_access_iterator_tag, ItType> {
+	class Iter {
 	private:
 		ItType* p;
 		size_t offset, maxOffset;
-		typedef std::iterator<std::random_access_iterator_tag, ItType> base_template;
 	public:
-		typedef typename base_template::value_type           value_type;
-		typedef typename base_template::pointer              pointer;
-		typedef typename base_template::reference            reference;
-		typedef typename base_template::iterator_category    iterator_category;
-		typedef typename base_template::difference_type      difference_type;
+		using iterator_category = std::random_access_iterator_tag;
+		using value_type = ItType;
+		using difference_type = std::ptrdiff_t;
+		using pointer = value_type*;
+		using reference = value_type&;
 
 		friend class CircularBuffer;
 
@@ -53,8 +52,8 @@ class CircularBuffer {
 			return *this;
 		}
 
-		Iter<ItType>& operator--(int) {
-			Iter<ItType> tmp(*this);
+		Iter<ItType> operator--(int) {
+			Iter<ItType> tmp(this);
 			operator--();
 			return tmp;
 		}
@@ -72,27 +71,47 @@ class CircularBuffer {
 		pointer operator->() { return (p + offset); }
 
 		difference_type operator -(const Iter& value) const {
-			return maxOffset + p + offset - value.p - value.offset;
+			return (p + offset - value.p - value.offset) % maxOffset;
 		}
 
 		difference_type operator +(const Iter& value) const {
-			return p + offset + value.p + value.offset;
+			return (p + offset + value.p + value.offset) % maxOffset;
 		}
 
 		Iter<ItType> operator -(const int& value) const {
-			return Iter<ItType>(p, offset - value, maxOffset);
+			Iter<ItType> tmp(p, offset, maxOffset);
+			if (value > 0) {
+				for (int i = 0; i != value; i++)
+					--tmp;
+			}
+			else {
+				for (int i = 0; i != value; i--)
+					++tmp;
+			}
+			return tmp;
 		}
 
 		Iter<ItType> operator +(const int& value) const {
-			return Iter<ItType>(p, offset + value, maxOffset);
+			Iter<ItType> tmp(p, offset, maxOffset);
+			if (value > 0) {
+				for (int i = 0; i != value; i++)
+					++tmp;
+			}
+			else {
+				for (int i = 0; i != value; i--)
+					--tmp;
+			}
+			return tmp;
 		}
 
 		bool operator==(Iter<ItType>& other) { return (p + offset) == (other.p + other.offset); }
 
 		bool operator<(Iter<ItType>& other) { return (p + offset) < (other.p + other.offset); }
+		bool operator<=(Iter<ItType>& other) { return (p + offset) <= (other.p + other.offset); }
+		bool operator>(Iter<ItType>& other) { return (p + offset) > (other.p + other.offset); }
+		bool operator>=(Iter<ItType>& other) { return (p + offset) >= (other.p + other.offset); }
 
 		friend bool operator!=(Iter<ItType> one, Iter<ItType> other) { return (one.p + one.offset) != (other.p + other.offset); }
-		friend class CircularBuffer;
 	};
 private:
 	T* v;
@@ -186,11 +205,9 @@ public:
 		delete[] v;
 		v = tmp;
 		maxSize = capacity;
-		Iter<T> begin(v, 0, maxSize);
-		_begin = begin;
+		_begin = Iter<T>(v, 0, maxSize);
 		size_t endOffset = size ? size : 0;
-		Iter<T> end(v, endOffset, maxSize);
-		_end = end;
+		_end = Iter<T>(v, endOffset, maxSize);
 	}
 
 	Iter<T> begin() const { return _begin; }
