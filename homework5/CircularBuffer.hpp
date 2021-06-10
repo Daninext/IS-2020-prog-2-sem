@@ -52,8 +52,8 @@ class CircularBuffer {
 			return *this;
 		}
 
-		Iter<ItType> operator--(int) {
-			Iter<ItType> tmp(this);
+		Iter<ItType>& operator--(int) {
+			Iter<ItType> tmp(*this);
 			operator--();
 			return tmp;
 		}
